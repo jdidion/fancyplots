@@ -7,5 +7,14 @@ Description: A collection of plotting functions, mostly for genetic/genomic
 	and ggplot, although eventually I'd like to move everything to grid.
 Depends: R (>= 3.1.3)
 License: GPL (>= 2)
-Imports: grid, ggplot, geneplotter, RColorBrewer, ade4, ape, MASS
+Imports: grid, 
+	 ggplot2, 
+	 gplots,
+	 VennDiagram
+	 RColorBrewer, 
+	 ade4, 
+	 ape, 
+	 geneplotter,
+	 genefilter,
+	 MASS
 LazyData: true

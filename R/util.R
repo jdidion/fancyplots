@@ -11,6 +11,16 @@ make.ramp <- function(pal, start=1, end=100) {
     return(function(n) pal[ceiling((n - start + 1) / g)])
 }
 
+#' Create an arbitrary-sized palette from an RColorBrewer palette.
+#'
+#' @param name RColorBrewer palette name
+#' @param cb.colors number of colors to use from the RColorBrewer palette
+#' @param pal.colors number of colors to generate from the RColorBrewer palette
+make.cb.pal <- function(name, cb.colors=8, pal.colors=255) {
+    white.blue <- colorRampPalette(brewer.pal(cb.colors, name))
+    white.blue(pal.colors)
+}
+
 #' Modifiy colors (names or rgb vectors) with an alpha value.
 rgb.alpha <- function(r, alpha=1.0) {
     if (is.character(r)) {
