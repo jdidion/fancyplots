@@ -1,8 +1,3 @@
-library(plyr)
-library(grid)
-loadlib("util/collections.R")
-loadlib("util/reshape.R")
-
 split.gp <- function(gp, n) {
     gps <- list()
     for (i in 1:n) {
