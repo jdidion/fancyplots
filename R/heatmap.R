@@ -122,7 +122,7 @@ plot.matrix <- function(x, xlab='', ylab='', xLabels=NULL, yLabels=NULL, grid.on
 #' @param bottom.to.top if TRUE, plot values from the bottom to the top of the plot, otherwise top-down
 #' @param ... additional arguments to be passed to `plot`
 #' 
-#' @example
+#' @examples
 #' vals <- runif(10)
 #' names(vals) <- paste('Sample', 1:10)
 #' par(mar=c(4,5,1,1))
