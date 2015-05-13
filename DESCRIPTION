@@ -18,5 +18,6 @@ Imports: grid,
 	 geneplotter,
 	 genefilter,
 	 MASS,
-     plyr
+     plyr,
+     proto
 LazyData: true
