@@ -107,9 +107,79 @@ plot.matrix <- function(x, xlab='', ylab='', xLabels=NULL, yLabels=NULL, grid.on
     }
 }
 
-#' Plot values as linear heatmaps.
+#' Plot pairs of values as linear heatmaps.
 #' 
-#' @param x vector of numeric values
+#' @param A vector or two-column matrix of numeric values (see details)
+#' @param B vector of numeric values the same length as `A`, or NULL if `A` is a matrix
+#' @param xlim range of possible A and B values
+#' @param palettes palettes for chosing colors for values less than and greater than `center. Either a vector or
+#' a list of two vectors, where each vector contains two or more colors, ordered from closest to furthest from
+#' `center`.
+#' @param nslices number of color slices to use in each gradient
+#' @param xlab x-axis label
+#' @param spacing amount of space [0-0.5) between each heatmap
+#' @param bottom.to.top if TRUE, plot values from the bottom to the top of the plot, otherwise top-down
+#' @param ... additional arguments to be passed to `plot`
+#' 
+#' @examples
+#' A <- matrix(runif(20) / 2, nrow=10, ncol=2, dimnames=list(paste('Sample', 1:10), c("A","B")))
+#' par(mar=c(4,5,1,1))
+#' paired.linear.heatmap(A, xlab='Allelic Ratio (B/A)')
+paired.linear.heatmap <- function(A, B=NULL, xlim=c(0, 0.5), palettes=brewer.pal(9, "Reds"), nslices=50, xlab="", 
+                                  spacing=0.05, bottom.to.top=TRUE, ...) {
+    if (is.null(B)) {
+        stopifnot(is.matrix(A) || is.data.frame(A))
+        B <- A[,2]
+        A <- A[,1]
+    }
+    else {
+        stopifnot(length(A) == length(B))
+    }
+    if (is.null(xlim)) {
+        xlim <- range(min(c(A,B)), max(c(A,B)))
+    }
+    else {
+        stopifnot(all(A >= xlim[1] & A <= xlim[2]))
+        stopifnot(all(B >= xlim[1] & B <= xlim[2]))
+    }
+    
+    if (!bottom.to.top) {
+        A <- rev(A)
+        B <- rev(B)
+    }
+    
+    # shift A and B to range 0-1
+    rng <- xlim[2] - xlim[1]
+    A.norm <- (A - xlim[1]) / rng
+    B.norm <- (B - xlim[1]) / rng
+    
+    if (is.list(palettes) && length(palettes) >= 2) {
+        A.pal <- palettes[[1]]
+        B.pal <- palettes[[2]]
+    }
+    else {
+        A.pal <- B.pal <- unlist(palettes)
+    }
+    A.colors <- colorRampPalette(A.pal)(nslices)
+    A.colidxs <- round(nslices * A.norm)
+    
+    B.colors <- colorRampPalette(B.pal)(nslices)
+    B.colidxs <- round(nslices * B.norm)
+    
+    N <- length(A)
+    plot(0:N, type="n", xaxt="n", yaxt="n", xlab=xlab, ylab="", xlim=c(-1, 1), ...)
+    for (i in 1:N) {
+        gradient.rect(-A[i], i-1+spacing, 0, i-spacing, col=rev(A.colors[1:A.colidxs[i]]), border='black')
+        gradient.rect(0, i-1+spacing, B[i], i-spacing, col=B.colors[1:B.colidxs[i]], border='black')
+    }
+    xlabs <- seq(xlim[1], xlim[2], length.out=6)
+    axis(1, seq(-1,1,0.2), c(rev(xlabs), xlabs[-1]))
+    axis(2, c(1:N)-0.5, names(A), las=2)
+}
+
+#' Plot values as linear heatmaps.
+#'
+#' @param x vector or two-column matrix of numeric values (see details)
 #' @param center central value; each value of x will be shown relative to its difference from `center`
 #' @param min minimum value; must be <= `center`
 #' @param max value; must be >= `center`
@@ -159,10 +229,10 @@ linear.heatmap <- function(x, center=0.5, minval=0.0, maxval=1.0, palettes=brewe
     r.colors <- colorRampPalette(r.pal)(nslices)
     
     l.idxs <- which(x < center)
-    l.colidxs <- nslices * ((center - x[l.idxs]) / (center - minval))
+    l.colidxs <- round(nslices * ((center - x[l.idxs]) / (center - minval)))
     
     r.idxs <- which(x > center)
-    r.colidxs <- nslices * ((x[r.idxs] - center) / (maxval - center))
+    r.colidxs <- round(nslices * ((x[r.idxs] - center) / (maxval - center)))
     
     N <- length(x)
     plot(0:N, type="n", yaxt="n", ylab="", xlab=xlab, xlim=c(minval, maxval), ...)
