@@ -11,7 +11,7 @@ Imports: grid,
 	 ggplot2, 
 	 gplots,
      plotrix,
-	 VennDiagram
+	 VennDiagram,
 	 RColorBrewer, 
 	 ade4, 
 	 ape, 
