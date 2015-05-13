@@ -17,8 +17,8 @@ make.ramp <- function(pal, start=1, end=100) {
 #' @param cb.colors number of colors to use from the RColorBrewer palette
 #' @param pal.colors number of colors to generate from the RColorBrewer palette
 make.cb.pal <- function(name, cb.colors=8, pal.colors=255) {
-    white.blue <- colorRampPalette(brewer.pal(cb.colors, name))
-    white.blue(pal.colors)
+    ramp <- colorRampPalette(brewer.pal(cb.colors, name))
+    ramp(pal.colors)
 }
 
 #' Modifiy colors (names or rgb vectors) with an alpha value.

@@ -106,3 +106,73 @@ plot.matrix <- function(x, xlab='', ylab='', xLabels=NULL, yLabels=NULL, grid.on
         dev.off()
     }
 }
+
+#' Plot values as linear heatmaps.
+#' 
+#' @param x vector of numeric values
+#' @param center central value; each value of x will be shown relative to its difference from `center`
+#' @param min minimum value; must be <= `center`
+#' @param max value; must be >= `center`
+#' @param palettes palettes for chosing colors for values less than and greater than `center. Either a vector or
+#' a list of two vectors, where each vector contains two or more colors, ordered from closest to furthest from
+#' `center`.
+#' @param nslices number of color slices to use in each gradient
+#' @param xlab x-axis label
+#' @param spacing amount of space [0-0.5) between each heatmap
+#' @param bottom.to.top if TRUE, plot values from the bottom to the top of the plot, otherwise top-down
+#' @param ... additional arguments to be passed to `plot`
+#' 
+#' @example
+#' vals <- runif(10)
+#' names(vals) <- paste('Sample', 1:10)
+#' par(mar=c(4,5,1,1))
+#' linear.heatmap(vals, xlab='Allelic Ratio (B/A)')
+linear.heatmap <- function(x, center=0.5, minval=0.0, maxval=1.0, palettes=brewer.pal(9, "Reds"), nslices=50, xlab="", 
+                           spacing=0.05, bottom.to.top=TRUE, ...) {
+    if (is.null(minval)) {
+        minval <- min(x)
+    }
+    else {
+        stopifnot(all(x >= minval))
+    }
+    if (is.null(maxval)) {
+        maxval <- max(x)
+    }
+    else {
+        stopifnot(all(x <= maxval))
+    }
+    stopifnot(minval <= center)
+    stopifnot(maxval >= center)
+    
+    if (!bottom.to.top) {
+        x <- rev(x)
+    }
+    
+    if (is.list(palettes) && length(palettes) >= 2) {
+        l.pal <- palettes[[1]]
+        r.pal <- palettes[[2]]
+    }
+    else {
+        l.pal <- r.pal <- unlist(palettes)
+    }
+    l.colors <- colorRampPalette(l.pal)(nslices)
+    r.colors <- colorRampPalette(r.pal)(nslices)
+    
+    l.idxs <- which(x < center)
+    l.colidxs <- nslices * ((center - x[l.idxs]) / (center - minval))
+    
+    r.idxs <- which(x > center)
+    r.colidxs <- nslices * ((x[r.idxs] - center) / (maxval - center))
+    
+    N <- length(x)
+    plot(0:N, type="n", yaxt="n", ylab="", xlab=xlab, xlim=c(minval, maxval), ...)
+    for (ii in 1:length(l.idxs)) {
+        i <- l.idxs[ii]
+        gradient.rect(x[i], i-1+spacing, center, i-spacing, col=rev(l.colors[1:l.colidxs[ii]]), border='black')
+    }
+    for (ii in 1:length(r.idxs)) {
+        i <- r.idxs[ii]
+        gradient.rect(center, i-1+spacing, x[i], i-spacing, col=r.colors[1:r.colidxs[ii]], border='black')
+    }
+    axis(2, c(1:N)-0.5, names(x), las=2)
+}
