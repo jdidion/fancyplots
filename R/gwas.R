@@ -86,9 +86,9 @@ cycle <- function(v, i) {
 
 alternate.colors <- function(d, colors) {
     chrs <- unique(d$CHR)
-    colors <- rep(colors, length.out=length(u))
+    colors <- rep(colors, length.out=length(chrs))
     col <- rep('black', nrow(d)) 
-    for (i in 1:length(u)) {
+    for (i in 1:length(chrs)) {
         col[d$CHR==chrs[i]] <- colors[i]
     }
     col
@@ -96,13 +96,19 @@ alternate.colors <- function(d, colors) {
 
 #' Generic Manhattan plotting function. Requires a data frame with at least 3 columns: 
 #' CHR, BP and STAT.
-manhattan <- function(d, colors, ylab, ymax=NULL, cex.x.axis=1, annotate=NULL, anno.col='green', 
+manhattan <- function(d, colors, ylab, chr.sizes=NULL, ymax=NULL, cex.x.axis=1, annotate=NULL, anno.col='green', 
         main=NULL, sub=NULL, threshold=NULL, lty.threshold=1, col.threshold='red', 
         dev.type=c("jpg","pdf"), dev.file=NULL, width=20, height=6, ...) {
     dev.type <- match.arg(dev.type)
     d$pos <- NA
     ticks <- NULL
     lastbase <- 0
+    xlim <- NULL
+    
+    if (!is.null(chr.sizes)) {
+        chr.sizes.cs <- cumsum(as.numeric(chr.sizes))
+        xlim <- c(0, max(chr.sizes.cs))
+    }
     
     if (is.data.frame(d)) {
         if (!("COL" %in% colnames(d))) {
@@ -120,22 +126,38 @@ manhattan <- function(d, colors, ylab, ymax=NULL, cex.x.axis=1, annotate=NULL, a
         ymax <- ceiling(max(c(d$STAT, threshold)))
     }
     
-    n <- length(unique(d$CHR))
+    chrs <- unique(d$CHR)
+    chr.idxs <- 1:length(chrs)
+    n <- length(chrs)
     if (n == 1) {
         d$pos <- d$BP
         ticks <- floor(length(pos)) / 2 + 1
     } 
     else {
-        for (i in unique(d$CHR)) {
+        for (i in chr.idxs) {
             if (i == 1) {
-                d[d$CHR==i, ]$pos <- d[d$CHR==i, ]$BP
+                d[d$CHR==chrs[i], ]$pos <- d[d$CHR==chrs[i], ]$BP
             } 
             else {
-                lastbase <- lastbase + tail(subset(d,CHR==i-1)$BP, 1)
-                d[d$CHR==i, ]$pos <- d[d$CHR==i, ]$BP + lastbase
+                if (!is.null(chr.sizes)) {
+                    lastbase <- chr.sizes.cs[i-1]
+                }
+                else {
+                    lastbase <- lastbase + tail(subset(d,CHR==chrs[i-1])$BP, 1)
+                }
+                d[d$CHR==chrs[i], ]$pos <- d[d$CHR==chrs[i], ]$BP + lastbase
             }
-            ticks <- c(ticks, d[d$CHR==i, ]$pos[floor(length(d[d$CHR==i, ]$pos)/2)+1])
+            if (!is.null(chr.sizes)) {
+                ticks <- c(ticks, ifelse(i==1,0,chr.sizes.cs[i-1]) + round(chr.sizes[i]/2))    
+            }
+            else {
+                ticks <- c(ticks, d[d$CHR==chrs[i], ]$pos[floor(length(d[d$CHR==chrs[i], ]$pos)/2)+1])
+            }
         }
+    }
+    
+    if (is.null(xlim)) {
+        xlim <- c(0, max(d$pos))
     }
     
     if (!is.null(dev.file)) {
@@ -148,15 +170,15 @@ manhattan <- function(d, colors, ylab, ymax=NULL, cex.x.axis=1, annotate=NULL, a
     }
     
     if (n == 1) {
-        with(d, plot(pos, STAT, ylim=c(0,ymax), main=main, sub=sub, ylab=ylab, 
+        with(d, plot(pos, STAT, xlim=xlim, ylim=c(0,ymax), main=main, sub=sub, ylab=ylab, 
             xlab=paste("Chromosome",unique(d$CHR),"position"), ...))
     }   
     else {
-        with(d, plot(pos, STAT, ylim=c(0,ymax), main=main, sub=sub, ylab=ylab, 
+        with(d, plot(pos, STAT, xlim=xlim, ylim=c(0,ymax), main=main, sub=sub, ylab=ylab, 
             xlab="Chromosome", xaxt="n", type="n", ...))
-        axis(1, at=ticks, lab=unique(d$CHR), cex.axis=cex.x.axis)
-        for (i in unique(d$CHR)) {
-            with(d[d$CHR==i, ], {
+        axis(1, at=ticks, lab=as.character(chrs), cex.axis=cex.x.axis)
+        for (i in chr.idxs) {
+            with(d[d$CHR==chrs[i], ], {
                 u <- unique(COL)
                 if (length(u) == 1) {
                     points(pos, STAT, pch=21, col=u[1], bg=u[1], ...)
