@@ -25,7 +25,7 @@ plot.venn <- function(lists, plotData=TRUE, returnFig=FALSE, pal=c("lightgreen",
     }
     fig <- VennDiagram::venn.diagram(lists, NULL, na="stop", fill=pal[1:length(lists)], ...)
     if (plotData) {
-        grid.draw(fig)
+        grid::grid.draw(fig)
     }
     retval <- NULL
     if (returnFig) {
