@@ -19,4 +19,3 @@ Imports: grid,
      genefilter,
      MASS,
      plyr
-LazyData: true
