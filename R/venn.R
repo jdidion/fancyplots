@@ -23,7 +23,7 @@ plot.venn <- function(lists, plotData=TRUE, returnFig=FALSE, pal=c("lightgreen",
     else {
         stop("Invalid lists object")
     }
-    fig <- venn.diagram(lists, NULL, na="stop", fill=pal[1:length(lists)], ...)
+    fig <- VennDiagram::venn.diagram(lists, NULL, na="stop", fill=pal[1:length(lists)], ...)
     if (plotData) {
         grid.draw(fig)
     }
