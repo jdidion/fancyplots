@@ -1,6 +1,6 @@
 #' Plot a matrix as a heatmap.
 # source: http://www.phaget4.org/R/image_matrix.html
-plot.matrix <- function(x, xlab='', ylab='', xLabels=NULL, yLabels=NULL, grid.on=TRUE, cex.axis=0.7, 
+plot.mat <- function(x, xlab='', ylab='', xLabels=NULL, yLabels=NULL, grid.on=TRUE, cex.axis=0.7, 
         grid.col="white", grid.lwd=1, ColorRamp=NULL, reverse.y=TRUE, zlim=NULL, pdf.file=NULL, 
         pdf.width=NULL, pdf.height=NULL, region=c("all", "upper.tri","lower.tri"), axis.ivl=1, 
         hide.x.names=FALSE, hide.y.names=FALSE, col.dendro=NULL, ...) {
