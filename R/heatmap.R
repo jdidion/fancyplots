@@ -1,9 +1,13 @@
 #' Plot a matrix as a heatmap.
 # source: http://www.phaget4.org/R/image_matrix.html
 plot.mat <- function(x, xlab='', ylab='', xLabels=NULL, yLabels=NULL, grid.on=TRUE, cex.axis=0.7, 
-        grid.col="white", grid.lwd=1, ColorRamp=NULL, reverse.y=TRUE, zlim=NULL, pdf.file=NULL, 
-        pdf.width=NULL, pdf.height=NULL, region=c("all", "upper.tri","lower.tri"), axis.ivl=1, 
-        hide.x.names=FALSE, hide.y.names=FALSE, col.dendro=NULL, ...) {
+        grid.col="white", grid.lwd=1, ColorRamp=NULL, reverse.y=TRUE, zlim=NULL, na=0, na.text=as.character(na),
+        pdf.file=NULL, pdf.width=NULL, pdf.height=NULL, region=c("all", "upper.tri","lower.tri"), axis.ivl=1, 
+        plot.values=FALSE, value.col="black", hide.x.names=FALSE, hide.y.names=FALSE, col.dendro=NULL, 
+        layout.widths=c(6,1), bottom.mar=8, left.mar=2, x.las=2, ...) {
+    
+    x.val <- x
+    x[is.na(x)] <- na
     
     if (is.null(zlim)) {
         zlim <- c(min(x), max(x))
@@ -61,7 +65,7 @@ plot.mat <- function(x, xlab='', ylab='', xLabels=NULL, yLabels=NULL, grid.on=TR
     if (reverse.y) {
         reverse <- nrow(x):1
         yLabels <- yLabels[reverse]
-        x <- x[reverse, ]
+        x <- x[reverse,,drop=F]
     }
 
     if (!is.null(pdf.file)) {
@@ -69,16 +73,16 @@ plot.mat <- function(x, xlab='', ylab='', xLabels=NULL, yLabels=NULL, grid.on=TR
     }
 
     if (is.null(col.dendro)) {
-        layout(matrix(data=c(1, 2), nrow=1, ncol=2), widths=c(6, 1), heights=1)
+        layout(matrix(data=c(1, 2), nrow=1, ncol=2), widths=layout.widths, heights=1)
     }
     else {
-        layout(matrix(data=c(1, 2, 0, 3), nrow=2, ncol=2), widths=c(6, 1), heights=c(1, 6))
+        layout(matrix(data=c(1, 2, 0, 3), nrow=2, ncol=2), widths=layout.widths, heights=c(1, 6))
     }
-    par(mar=c(0, 2, 0, 2), oma=c(0, 0, ifelse(is.null(title),0,2.5), 0))
+    par(mar=c(0, left.mar, 0, 2), oma=c(0, 0, ifelse(is.null(title), 1, 2.5), 0))
     if (!is.null(col.dendro)) {
         plot(col.dendro, axes = FALSE, xaxs = "i", leaflab = "none")
     }
-    par(mar=c(8, 2, 0, 2))
+    par(mar=c(bottom.mar, left.mar, 0, 2))
     image(1:length(xLabels), 1:length(yLabels), t(x), col=ColorRamp,
         xlab=xlab, ylab=ylab, axes=FALSE, zlim=zlim)
     box()
@@ -86,10 +90,19 @@ plot.mat <- function(x, xlab='', ylab='', xLabels=NULL, yLabels=NULL, grid.on=TR
         segments(1:(length(xLabels)+1)+0.5, 0, 1:(length(xLabels)+1)+0.5, length(yLabels)+1, col=grid.col, lwd=grid.lwd)
         segments(0, 1:(length(yLabels)+1)+0.5, length(xLabels)+3, 1:(length(yLabels)+1)+0.5, col=grid.col, lwd=grid.lwd)
     }
+    if (plot.values) {
+        for (i in 1:ncol(x)) {
+            txt <- ifelse(is.na(x.val[,i]), na.text, x.val[,i])
+            if (reverse.y) {
+                txt <- rev(txt)
+            }
+            text(i, 1:nrow(x), txt, col=value.col)
+        }
+    }
     xax <- seq(1, length(xLabels), axis.ivl)
     yax <- seq(1, length(yLabels), axis.ivl)
     if (!hide.x.names) {
-        axis(1, at=xax, labels=xLabels[xax], cex.axis=cex.axis, las=2)
+        axis(1, at=xax, labels=xLabels[xax], cex.axis=cex.axis, las=x.las)
     }
     if (!hide.y.names) {
         axis(2, at=yax, labels=yLabels[yax], cex.axis=cex.axis, las=2)
