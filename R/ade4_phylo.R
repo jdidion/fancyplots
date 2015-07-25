@@ -1,17 +1,96 @@
 #' Draw a radial tree for an ade4 phylog object.
-radial.phylog <- function (phylog, circle=1, show.leaves=TRUE, show.leaf.nodes=TRUE,
-        labels.leaves=names(phylog$leaves), cex.leaves=1, bg.leaves='black', pch.leaves=21,
-        fg.text.leaves='black', ragged.leaves=FALSE, pad.leaves=0, cex.leaf.points=1,
-        number.leaves=FALSE, cex.leaf.numbers=0.5,
+#'
+#' Parameter names use the following terminology:
+#' * branch: the lines/edges in the tree
+#' * leaf: the terminal branches of the tree
+#' * node: a circle drawn at the point where a branch splits, or
+#'   at the end of a leaf ('leaf node')
+#' * pointer: a line connecting the end of a leaf branch to its
+#'   label
+#' * center: the middle of the circle
+#'
+#' @param phylog `ade4 phylog` or character string with file name 
+#' containing tree
+#' @param circle multiplier for the size of the tree (see details)
+#' @param show.leaves logical; turn ploting of leaf labels and 
+#' decorations on/off
+#' @param labels.leaves leaf names in the correct order; defaults to
+#' the names provided in the tree object
+#' @param cex.leaves, fg.text.leaves size and color of leaf labels
+#' @param ragged.leaves logical; whether to draw all labels at the
+#' same distance from the center (FALSE) or draw each label at the
+#' end of its branch (TRUE)
+#' @param pad.leaves padding between the end of the branch/pointer
+#' and the start of the label text
+#' @param show.leaf.nodes logical; whether to draw leaf node circles
+#' @param bg.leaf.nodes, pch.leaf.nodes, cex.leaf.nodes color, shape
+#' and size of leaf nodes
+#' @param number.leaves whether to add a sequential number to each
+#' label, for e.g. so you can refer to individual nodes in a figure
+#' leged
+#' @param cex.leaf.numbers size of the leaf numbers; defaults to
+#' `cex.leaves`
+#' @param labelptr.show whether to show pointers
+#' @param labelptr.col, labelptr.pad color padding space for pointers
+#' @param show.nodes whether to draw circles for internal nodes
+#' @param labels.nodes node labels; defaults to labels provided in
+#' tree object; set to NULL to not draw labels
+#' @param pch.nodes, cex.nodes node circle shape and size
+#' @param fg.nodes, bg.nodes node colors
+#' @param bg.colramp.node instead of specifying `bg.nodes`, use this to
+#' specify a color ramp function to derive the node color from the node 
+#' value (typically a bootstrap value)
+#' @param lwd.branch, lwd.branch.default width of branch lines; can be
+#' a list to specify different values for each branch (use `lwd.branch.default`
+#' if you only want to give different values to a few nodes). Each branch
+#' can be given as a two element vector specifying the widths of the left
+#' and right branches independently
+#' @param col.branch, col.branch.default similar to lwd, but for colors
+#' @param col.branch.colramp, weights.branch provide a color ramp function
+#' to determine branch colors from weights. Weights default to branch lengths.
+#' @param col.center, cex.center color and shape of center node
+#' @param legend.nodes, legend.title.nodes whether to show a legend for node
+#' colors, and a custom title
+#' @param legend.branch, legend.branch.title whether to show a legend for
+#' branch weights, and a custom title
+#' @param main figure title
+#' @param pdf.file, pdf.width, pdf.height save the tree to a PDF file with
+#' the given dimensions
+#' 
+#' @details
+#' By default, the tree has a radius of 1 on a 4x4 plot. Changing 
+#' the `circle` parameter changes the tree radius but does not 
+#' change the plot size, so it takes a bit of trial and error to
+#' find the correct device size, `cex.leaves` and other parameters
+#' to make a nice looking tree.
+radial.phylog <- function (phylog, circle=1, 
+        # leaves
+        show.leaves=TRUE, labels.leaves=names(phylog$leaves), cex.leaves=1, 
+        fg.text.leaves='black', ragged.leaves=FALSE, pad.leaves=0, 
+        # leaf nodes
+        show.leaf.nodes=TRUE, bg.leaf.nodes='black', pch.leaf.nodes=21, 
+        cex.leaf.nodes=1, 
+        # leaf numbering
+        number.leaves=FALSE, cex.leaf.numbers=cex.leaves,
+        # pointers
         labelptr.show=TRUE, labelptr.col=grey(0.7), labelptr.pad=NULL,
-        show.nodes=FALSE, labels.nodes=phylog$nodes, cex.nodes=1, bg.nodes='white', pch.nodes=21,
-        bg.colramp.nodes=NULL, fg.nodes='black', adj.nodes=0,
-        lwd.branch=1, lwd.branch.default=1, col.branch='black', col.branch.default='black',
-        col.branch.colramp=NULL, weights.branch=NULL,
+        # internal nodes
+        show.nodes=FALSE, labels.nodes=phylog$nodes, pch.nodes=21, cex.nodes=1, 
+        fg.nodes='black', bg.nodes='white', bg.colramp.nodes=NULL, #adj.nodes=0,
+        # branches
+        lwd.branch=1, lwd.branch.default=1, col.branch='black', 
+        col.branch.default='black', col.branch.colramp=NULL, weights.branch=phylog$droot,
+        # center
         col.center='red', cex.center=2,
-        legend.nodes=FALSE, legend.title.nodes="Nodes",
+        # node legend
+        legend.nodes=FALSE, legend.title.nodes="Nodes", 
+        # branch legend
         legend.branch=FALSE, legend.title.branch="Branches",
-        main=NULL, pdf.file=NULL, pdf.width=7, pdf.height=7) {
+        # title
+        main=NULL, 
+        # device
+        pdf.file=NULL, pdf.width=7, pdf.height=7) {
+            
     if (is.character(phylog)) {
         phylog <- newick2phylog(readLines(phylog))
     }
@@ -58,7 +137,8 @@ radial.phylog <- function (phylog, circle=1, show.leaves=TRUE, show.leaf.nodes=T
     names(ang) <- names(dist.nodes)
     ang <- c(alpha, ang)
 
-    opar <- par(mar=c(0.1, 0.1, 0.1, 0.1), oma=c(1 + ifelse(legend.nodes || legend.branch, 1, 0), 1, 1, 1))
+    opar <- par(mar=c(0.1, 0.1, 0.1, 0.1), 
+                oma=c(1 + ifelse(legend.nodes || legend.branch, 1, 0), 1, 1, 1))
     on.exit(par(opar))
     plot.default(0, 0, type="n", asp=1, xlab="", ylab="", xaxt="n", yaxt="n", xlim=c(-2, 2),
         ylim=c(-2, 2), xaxs="i", yaxs="i", frame.plot=FALSE)
@@ -105,16 +185,22 @@ radial.phylog <- function (phylog, circle=1, show.leaves=TRUE, show.leaf.nodes=T
         }
         else {
             col <- unlist(col.branch[w])
+            if (length(col) == 1) {
+                col <- c(col, col)
+            }
         }
         col[is.na(col)] <- col.branch.default
 
         if (length(lwd.branch) == 1) {
-            lwd = c(lwd.branch, lwd.branch)
+            lwd <- c(lwd.branch, lwd.branch)
         }
         else {
-            lwd = lwd.branch[w]
+            lwd <- unlist(lwd.branch[w])
+            if (length(lwd) == 1) {
+                lwd <- c(lwd, lwd)
+            }
         }
-        col[is.na(lwd)] <- lwd.branch.default
+        lwd[is.na(lwd)] <- lwd.branch.default
 
         # perpendicular to radius
         b <- range(ang[w])
@@ -152,7 +238,7 @@ radial.phylog <- function (phylog, circle=1, show.leaves=TRUE, show.leaf.nodes=T
             if (is.list(labels.leaves[i])) {
                 if (is.integer(labels.leaves[[i]][[1]])) {
                     # This is wrong, but I'm not sure how to get the true point of a plotting symbol
-                    pt.size <- max(convert.size(par("cin"))) * cex.leaf.points / 2.75
+                    pt.size <- max(convert.size(par("cin"))) * cex.leaf.nodes / 2.75
                     cols <- unlist(sapply(1:length(labels.leaves[[i]]), function(l)
                         rep(names(labels.leaves[[i]])[[l]], labels.leaves[[i]][[l]])))
                     npts <- length(cols)
@@ -176,7 +262,7 @@ radial.phylog <- function (phylog, circle=1, show.leaves=TRUE, show.leaf.nodes=T
                         npts <- npts - n
                         row <- row + 1
                     }
-                    points(pt.x, pt.y, col=cols, pch=20, cex=cex.leaf.points)
+                    points(pt.x, pt.y, col=cols, pch=20, cex=cex.leaf.nodes)
                 }
                 else {
                     par(srt=alpha[i] * 360/2/pi)
@@ -199,8 +285,8 @@ radial.phylog <- function (phylog, circle=1, show.leaves=TRUE, show.leaf.nodes=T
                 segments(xptr[i], yptr[i], x[i], y[i], col=labelptr.col)
             }
             if (show.leaf.nodes) {
-                pch <- ifelse(length(pch.leaves)==1, pch.leaves, pch.leaves[i])
-                col <- ifelse(length(bg.leaves)==1, bg.leaves, bg.leaves[i])
+                pch <- ifelse(length(pch.leaf.nodes)==1, pch.leaf.nodes, pch.leaf.nodes[i])
+                col <- ifelse(length(bg.leaf.nodes)==1, bg.leaf.nodes, bg.leaf.nodes[i])
                 points(x[i], y[i], pch=pch, bg=col, cex=par("cex") * show.leaves)
             }
             if (number.leaves) {
