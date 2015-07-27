@@ -18,4 +18,5 @@ Imports: grid,
      geneplotter,
      genefilter,
      MASS,
-     plyr
+     plyr,
+     viridis
