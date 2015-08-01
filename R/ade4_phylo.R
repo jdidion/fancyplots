@@ -1,3 +1,21 @@
+#' Map names from ped file (modified to have phylip-compliant names)
+#' to the original ped file with full names
+#' 
+#' @param from.ped modified ped
+#' @param to.ped original ped
+#' @return formatting function
+map.names <- function(from.names, to.names) {
+    return(function(x) {
+        m <- match(x, from.names)
+        if (is.na(m)) {
+            x
+        }
+        else {
+            to.names[m]
+        }
+    })
+}
+
 #' Draw a radial tree for an ade4 phylog object.
 #'
 #' Parameter names use the following terminology:
@@ -16,6 +34,7 @@
 #' decorations on/off
 #' @param labels.leaves leaf names in the correct order; defaults to
 #' the names provided in the tree object
+#' @param label.formatter function to format labels
 #' @param cex.leaves, fg.text.leaves size and color of leaf labels
 #' @param ragged.leaves logical; whether to draw all labels at the
 #' same distance from the center (FALSE) or draw each label at the
@@ -65,8 +84,8 @@
 #' to make a nice looking tree.
 radial.phylog <- function (phylog, circle=1, 
         # leaves
-        show.leaves=TRUE, labels.leaves=names(phylog$leaves), cex.leaves=1, 
-        fg.text.leaves='black', ragged.leaves=FALSE, pad.leaves=0, 
+        show.leaves=TRUE, labels.leaves=names(phylog$leaves), label.formatter=NULL,
+        cex.leaves=1, fg.text.leaves='black', ragged.leaves=FALSE, pad.leaves=0, 
         # leaf nodes
         show.leaf.nodes=TRUE, bg.leaf.nodes='black', pch.leaf.nodes=21, 
         cex.leaf.nodes=1, 
@@ -107,16 +126,22 @@ radial.phylog <- function (phylog, circle=1,
 
     leaves.number <- length(phylog$leaves)
     leaves.names <- names(phylog$leaves)
-    nodes.number <- length(phylog$nodes)
-    nodes.names <- names(phylog$nodes)
     if (length(labels.leaves) == 1) {
         name.map <- read.table(labels.leaves, sep='=', header=FALSE, colClasses='character', row.names=1)
         labels.leaves <- name.map[substr(leaves.names, 2, nchar(leaves.names)), 1]
     }
-    if (length(labels.leaves) != leaves.number)
+    if (length(labels.leaves) != leaves.number) {
         labels.leaves <- leaves.names
-    if (length(labels.nodes) != nodes.number)
+    }
+    if (!is.null(label.formatter)) {
+        labels.leaves <- sapply(labels.leaves, label.formatter)
+    }
+    
+    nodes.number <- length(phylog$nodes)
+    nodes.names <- names(phylog$nodes)
+    if (length(labels.nodes) != nodes.number) {
         labels.nodes <- names(phylog$nodes)
+    }
 
     dis <- phylog$droot
     dis <- (dis / max(dis)) * circle
