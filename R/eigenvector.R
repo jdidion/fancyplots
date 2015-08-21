@@ -28,6 +28,10 @@ plot.pca <- function(pca, group.df, PCs=c(1,2), pct.var=NULL, plot=TRUE, ...) {
     plot.eig(x, y, group.df, PCs, pct.var=pct.var, plot=plot, dim.label="PC", ...)
 }
 
+#' Perform MDS analysis and plot results.
+#' 
+#' @param d distance matrix
+#' @param group.df data.frame of grouping variable(s)
 plot.mds <- function(d, group.df, dim.plot=c(1, 2), ndim=max(dim.plot), returnData=FALSE, 
                      plotData=TRUE, returnFig=FALSE, main=NULL) {
     mds <- suppressWarnings(cmdscale(as.dist(d), k=ndim, eig=TRUE))
