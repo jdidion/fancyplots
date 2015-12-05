@@ -1,0 +1,366 @@
+ggplot(m, aes(x=Geno, y=beta_mean)) + geom_boxplot() + geom_point(position=position_jitter(width = .1))
+ggplot(m, aes(x=Geno, y=beta_mean)) + geom_boxplot() + geom_point(position=position_jitter(width = .1), size=2)
+ggplot(m, aes(x=Geno, y=beta_mean)) + geom_boxplot() + geom_point(position=position_jitter(width = .1), size=3)
+t.test(m[m$Geno=='CC','beta_mean'], m[m$Geno='CT','beta_mean'])
+t.test(m[m$Geno=='CC','beta_mean'], m[m$Geno=='CT','beta_mean'])
+t.test(m[m$Geno=='CC','beta_mean'], m[m$Geno=='CT','beta_mean'], alternative='less')
+t.test(m[m$Geno=='CC','beta_mean'], m[m$Geno=='CT','beta_mean'], alternative='greater')
+substr(m[,2],1,1)
+m$tissue <- substr(m[,2],1,1)
+t.test(m[m$tissue=='M' & m$Geno=='CC','beta_mean'], m[m$tissue=='M' & m$Geno=='CT','beta_mean'], alternative='greater')
+head(m)
+ggplot(m[m$tissue=='M',], aes(x=Geno, y=beta_mean)) + geom_boxplot() + geom_point(position=position_jitter(width = .1), size=3)
+ggplot(m[m$tissue=='A',], aes(x=Geno, y=beta_mean)) + geom_boxplot() + geom_point(position=position_jitter(width = .1), size=3)
+ggplot(m[m$tissue=='M',], aes(x=Geno, y=beta_mean)) + geom_boxplot() + geom_point(position=position_jitter(width = .1), size=3)
+ggplot(m[m$tissue=='A',], aes(x=Geno, y=beta_mean)) + geom_boxplot() + geom_point(position=position_jitter(width = .1), size=3)
+grid.arrange(ggplot(m[m$tissue=='M',], aes(x=Geno, y=beta_mean)) + geom_boxplot() + geom_point(position=position_jitter(width = .1), size=3),ggplot(m[m$tissue=='A',], aes(x=Geno, y=beta_mean)) + geom_boxplot() + geom_point(position=position_jitter(width = .1), size=3),ncol=2)
+library(gridExtra)
+install.packages('gridExtra')
+library(gridExtra)
+grid.arrange(ggplot(m[m$tissue=='M',], aes(x=Geno, y=beta_mean)) + geom_boxplot() + geom_point(position=position_jitter(width = .1), size=3),ggplot(m[m$tissue=='A',], aes(x=Geno, y=beta_mean)) + geom_boxplot() + geom_point(position=position_jitter(width = .1), size=3),ncol=2)
+grid.arrange(ggplot(m[m$tissue=='M',], aes(x=Geno, y=beta_mean)) + geom_boxplot() + geom_point(position=position_jitter(width = .1) + theme_bw() + gg_title("Muscle"), size=3),ggplot(m[m$tissue=='A',], aes(x=Geno, y=beta_mean)) + geom_boxplot() + geom_point(position=position_jitter(width = .1)+ theme_bw() + gg_title("Muscle"), size=3),ncol=2)
+grid.arrange(ggplot(m[m$tissue=='M',], aes(x=Geno, y=beta_mean)) + geom_boxplot() + geom_point(position=position_jitter(width = .1) + theme_bw() + ggtitle("Muscle"), size=3),ggplot(m[m$tissue=='A',], aes(x=Geno, y=beta_mean)) + geom_boxplot() + geom_point(position=position_jitter(width = .1)+ theme_bw() + ggtitle("Adipose"), size=3),ncol=2)
+grid.arrange(ggplot(m[m$tissue=='M',], aes(x=Geno, y=beta_mean)) + geom_boxplot() + geom_point(position=position_jitter(width = .1), size=3) + theme_bw() + ggtitle("Muscle"),ggplot(m[m$tissue=='A',], aes(x=Geno, y=beta_mean)) + geom_boxplot() + geom_point(position=position_jitter(width = .1), size=3)+ theme_bw() + ggtitle("Adipose"),ncol=2)
+head(g)
+pdf("~/Desktop/rs516946_methylation.pdf", width=12, height=6)
+grid.arrange(ggplot(m[m$tissue=='M',], aes(x=Geno, y=beta_mean)) + geom_boxplot() + geom_point(position=position_jitter(width = .1), size=3) + theme_bw() + ggtitle("Muscle"),ggplot(m[m$tissue=='A',], aes(x=Geno, y=beta_mean)) + geom_boxplot() + geom_point(position=position_jitter(width = .1), size=3)+ theme_bw() + ggtitle("Adipose"),ncol=2)
+dev.off()
+m<-read_excel('~/Downloads/methylation/Sample_Information/Minfi/Minfi_output_P700.xlsx')
+library(readxl)
+m<-read_excel('~/Downloads/methylation/Sample_Information/Minfi/Minfi_output_P700.xlsx')
+head(m)
+table(m[,2])
+unique(m[,6])
+gsub('.*_','',m[,6])
+m$group <- gsub('.*_','',m[,6])
+m$tissue<-substr(m[,2],1,)
+m$tissue<-substr(m[,2],1,1)
+head(m)
+mm<-NULL
+for (i in unique(m[,2])) {
+x<-m[m[,2]==i,]
+}
+for (i in unique(m[,2])) {
+}
+for (i in unique(m[,3])) {
+x<-m[m[,3]==i,]
+alow <- x[x$group=='2.86' & x$tissue=='A',]
+ahigh <- x[x$group=='5.71' & x$tissue=='A',]
+mlow <- x[x$group=='2.86' & x$tissue=='M',]
+mhigh <- x[x$group=='5.71' & x$tissue=='M',]
+A <- data.frame(tissue='A', r1.low=NA, r1.high=NA, r2.low=NA, r2.high=NA)
+M <- data.frame(tissue='M', r1.low=NA, r1.high=NA, r2.low=NA, r2.high=NA)
+A$R1.low=alow[1,'beta_mean']
+if (nrow(alow) > 1) {
+A$R2.low=alow[2,'beta_mean']
+}
+for (i in unique(m[,3])) {#
+	x<-m[m[,3]==i,]#
+	alow <- x[x$group=='2.86' & x$tissue=='A',]#
+	ahigh <- x[x$group=='5.71' & x$tissue=='A',]#
+	mlow <- x[x$group=='2.86' & x$tissue=='M',]#
+	mhigh <- x[x$group=='5.71' & x$tissue=='M',]#
+	A <- data.frame(tissue='A', r1.low=NA, r1.high=NA, r2.low=NA, r2.high=NA)#
+	M <- data.frame(tissue='M', r1.low=NA, r1.high=NA, r2.low=NA, r2.high=NA)#
+	A$R1.low=alow[1,'beta_mean']#
+	if (nrow(alow) > 1) {#
+		A$R2.low=alow[2,'beta_mean']#
+	}#
+	A$R1.high=ahigh[1,'beta_mean']#
+	if (nrow(ahigh) > 1) {#
+		A$R2.high=ahigh[2,'beta_mean']#
+	}#
+	M$R1.low=mlow[1,'beta_mean']#
+	if (nrow(mlow) > 1) {#
+		M$R2.low=mlow[2,'beta_mean']#
+	}#
+	M$R1.high=mhigh[1,'beta_mean']#
+	if (nrow(mhigh) > 1) {#
+		M$R2.high=mhigh[2,'beta_mean']#
+	}#
+	mm<-rbind(mm, A, M)#
+}
+}
+mm<-NULL
+for (i in unique(m[,3])) {#
+	x<-m[m[,3]==i,]#
+	alow <- x[x$group=='2.86' & x$tissue=='A',]#
+	ahigh <- x[x$group=='5.71' & x$tissue=='A',]#
+	mlow <- x[x$group=='2.86' & x$tissue=='M',]#
+	mhigh <- x[x$group=='5.71' & x$tissue=='M',]#
+	A <- data.frame(tissue='A', r1.low=NA, r1.high=NA, r2.low=NA, r2.high=NA)#
+	M <- data.frame(tissue='M', r1.low=NA, r1.high=NA, r2.low=NA, r2.high=NA)#
+	A$R1.low=alow[1,'beta_mean']#
+	if (nrow(alow) > 1) {#
+		A$R2.low=alow[2,'beta_mean']#
+	}#
+	A$R1.high=ahigh[1,'beta_mean']#
+	if (nrow(ahigh) > 1) {#
+		A$R2.high=ahigh[2,'beta_mean']#
+	}#
+	M$R1.low=mlow[1,'beta_mean']#
+	if (nrow(mlow) > 1) {#
+		M$R2.low=mlow[2,'beta_mean']#
+	}#
+	M$R1.high=mhigh[1,'beta_mean']#
+	if (nrow(mhigh) > 1) {#
+		M$R2.high=mhigh[2,'beta_mean']#
+	}#
+	mm<-rbind(mm, A, M)#
+}
+mm
+mm<-NULL
+for (i in unique(m[,3])) {#
+	x<-m[m[,3]==i,]#
+	alow <- x[x$group=='2.86' & x$tissue=='A',]#
+	ahigh <- x[x$group=='5.71' & x$tissue=='A',]#
+	mlow <- x[x$group=='2.86' & x$tissue=='M',]#
+	mhigh <- x[x$group=='5.71' & x$tissue=='M',]#
+	A <- data.frame(tissue='A', R1.low=NA, R1.high=NA, R2.low=NA, R2.high=NA)#
+	M <- data.frame(tissue='M', R1.low=NA, R1.high=NA, R2.low=NA, R2.high=NA)#
+	A$R1.low=alow[1,'beta_mean']#
+	if (nrow(alow) > 1) {#
+		A$R2.low=alow[2,'beta_mean']#
+	}#
+	A$R1.high=ahigh[1,'beta_mean']#
+	if (nrow(ahigh) > 1) {#
+		A$R2.high=ahigh[2,'beta_mean']#
+	}#
+	M$R1.low=mlow[1,'beta_mean']#
+	if (nrow(mlow) > 1) {#
+		M$R2.low=mlow[2,'beta_mean']#
+	}#
+	M$R1.high=mhigh[1,'beta_mean']#
+	if (nrow(mhigh) > 1) {#
+		M$R2.high=mhigh[2,'beta_mean']#
+	}#
+	mm<-rbind(mm, A, M)#
+}
+mm
+mm<-NULL
+for (i in unique(m[,3])) {#
+	x<-m[m[,3]==i,]#
+	alow <- x[x$group=='2.86' & x$tissue=='A',]#
+	ahigh <- x[x$group=='5.71' & x$tissue=='A',]#
+	mlow <- x[x$group=='2.86' & x$tissue=='M',]#
+	mhigh <- x[x$group=='5.71' & x$tissue=='M',]#
+	A <- data.frame(indiv=i, tissue='A', R1.low=NA, R1.high=NA, R2.low=NA, R2.high=NA)#
+	M <- data.frame(indiv=i, tissue='M', R1.low=NA, R1.high=NA, R2.low=NA, R2.high=NA)#
+	A$R1.low=alow[1,'beta_mean']#
+	if (nrow(alow) > 1) {#
+		A$R2.low=alow[2,'beta_mean']#
+	}#
+	A$R1.high=ahigh[1,'beta_mean']#
+	if (nrow(ahigh) > 1) {#
+		A$R2.high=ahigh[2,'beta_mean']#
+	}#
+	M$R1.low=mlow[1,'beta_mean']#
+	if (nrow(mlow) > 1) {#
+		M$R2.low=mlow[2,'beta_mean']#
+	}#
+	M$R1.high=mhigh[1,'beta_mean']#
+	if (nrow(mhigh) > 1) {#
+		M$R2.high=mhigh[2,'beta_mean']#
+	}#
+	mm<-rbind(mm, A, M)#
+}
+mm
+mm <- mm[!is.na(mm[,2]),]
+mm
+mm <- mm[!is.na(mm[,3]),]
+mm
+plot(mm$R1.low, mm$R1.high, shape=factor(mm$tissue), col=factor(mm$indiv))
+plot(mm$R1.low, mm$R1.high, pch=factor(mm$tissue), col=factor(mm$indiv))
+plot(mm$R1.low, mm$R1.high, pch=as.integer(factor(mm$tissue)), col=factor(mm$indiv))
+dev.new(width=20, height=20)
+plot(mm$R1.low, mm$R1.high, pch=as.integer(factor(mm$tissue)), col=factor(mm$indiv))
+dev.new(width=20, height=20)
+plot(mm$R1.low, mm$R1.high, pch=as.integer(factor(mm$tissue)), col=factor(mm$indiv), cex=2)
+legend('topleft', levels(factor(mm$indiv)), fill=factor(mm$indiv))
+plot(mm$R1.low, mm$R1.high, pch=as.integer(factor(mm$tissue)), col=rainbow(24)[factor(mm$indiv)], cex=2)
+dev.new(width=20, height=20)
+plot(mm$R1.low, mm$R1.high, pch=as.integer(factor(mm$tissue)), col=rainbow(24)[factor(mm$indiv)], cex=2)
+legend('topleft', levels(factor(mm$indiv)), fill=rainbow(24)[factor(mm$indiv)])
+plot(mm$R1.low, mm$R1.high, pch=as.integer(factor(mm$tissue)), col=rainbow(24)[factor(mm$indiv)], cex=2, xlim=c(0.35, 0.4))
+plot(mm$R1.low, mm$R1.high, pch=as.integer(factor(mm$tissue)), col=rainbow(24)[factor(mm$indiv)], cex=2, xlim=c(0.35, 0.4), ylim=c(0.35, 0.4))
+legend('topleft', levels(factor(mm$indiv)), fill=rainbow(24)[factor(mm$indiv)])
+plot(mm$R1.low, mm$R1.high, pch=20+as.integer(factor(mm$tissue)), col=rainbow(24)[factor(mm$indiv)], cex=2, xlim=c(0.35, 0.4), ylim=c(0.35, 0.4))
+factor(mm$tissue)
+segments(0,0,1,1)
+mmm<-rbind(mm[,1:3],mm[,c(1,2,4)])
+mmm<-rbind(cbind(mm[,1:2],M=mm[,3]),cbind(mm[,c(1,2)], M=mm[,4]))
+head(mmm)
+mmm<-rbind(cbind(mm[,1:2],rep=1, M=mm[,3]),cbind(mm[,c(1,2)], rep=2, M=mm[,4]))
+head(mmm)
+library(ggplot2, aes(rep, M, group=indiv, colour=tissue)) + geom_path()
+library(ggplot2, aes(factor(as.character(rep)), M, group=factor(as.character(indiv)), colour=tissue)) + geom_path()
+mmm[,1] <- factor(mmm[,1])
+mmm[,2] <- factor(mmm[,2])
+mmm[,3] <- factor(mmm[,3])
+library(ggplot2, aes(rep, M, group=indiv, colour=tissue)) + geom_path()
+library(ggplot2)
+ggplot(aes(rep, M, group=indiv, colour=tissue)) + geom_path())
+ggplot(aes(rep, M, group=indiv, colour=tissue) + geom_path()
+)
+ggplot(aes(rep, M, group=indiv, colour=tissue)) + geom_path()
+ggplot(mmm, aes(rep, M, group=indiv, colour=tissue)) + geom_path()
+ggplot(mmm, aes(rep, M, group=indiv, colour=tissue)) + geom_path() + theme_bw()
+ggplot(mmm, aes(rep, M, group=tissue, colour=indiv)) + geom_path() + theme_bw()
+ggplot(mmm, aes(rep, M, group=indiv, colour=tissue)) + geom_path() + theme_bw()
+mmm
+mmm[,1]
+mmm[,2]
+mmm[,3]
+ggplot(mmm[1:4,], aes(rep, M, group=indiv, colour=tissue)) + geom_path() + theme_bw()
+ggplot(mmm, aes(x=indiv, y=M, group=tissue, colour=rep)) + geom_point()
+ggplot(mmm, aes(x=indiv, y=M, group=tissue, colour=rep)) + geom_point() + theme_bw()
+ggplot(mmm, aes(x=indiv, y=M, group=tissue, colour=rep)) + geom_point(position='dodge') + theme_bw()
+ggplot(mmm, aes(x=indiv, y=M, group=tissue, colour=rep)) + geom_point(position=position_dodge(width=0.5)) + theme_bw()
+ggplot(mmm, aes(x=indiv, y=M, group=tissue, colour=rep)) + geom_point(position=position_dodge(width=0.5), size=3) + theme_bw()
+mm
+sum(mm[,3]>mm[,4])
+sum(mm[,3]<mm[,4])
+485553 * 857
+485553 + 857
+485578 + 857
+?writeLInes
+?writeLines
+load('~/data/methylation/ank1_data.RData')
+print(load('~/data/methylation/ank1_data.RData'))
+dim(ank1)
+source("http://bioconductor.org/biocLite.R")#
+biocLite("minfi")
+library(minfi)
+print(load('~/data/methylation/ank1_data.RData'))
+dim(ank1)
+colnames(ank1)
+head(arrays)
+m<-match(arrays$Sentrixid_position,colnames(ank1))
+m
+arrays$Geno
+w <- !is.na(arrays$Geno)
+w
+ank1<-ank1[,w]
+arrays<-arrays[w,]
+unique(arrays$Geno)
+fData(ank1)
+probes<-read.table('~/data/methylation/ank1_probes.txt',sep="\t")
+probes
+probes<-read.table('~/data/methylation/ank1_probes.txt',sep="\t",header=T,stringsAsFactors=F)
+range(probes$MAPINFO)
+plot(0:1,type='n',xlim=range(probes$MAPINFO),ylim=c(0,1))
+dev.new(width=20, height=20)
+plot(0:1,type='n',xlim=range(probes$MAPINFO),ylim=c(0,1))
+?points
+head(arrays)
+arrays$tissue <- substr(arrays[,2],1,1)
+head(arrays)
+points(probes$MAPINFO, apply(ank1[,arrays$tissue=='A' & arrays$Geno=='CT'], 1, median)))
+points(probes$MAPINFO, apply(ank1[,arrays$tissue=='A' & arrays$Geno=='CT'], 1, median))
+apply(ank1[,arrays$tissue=='A' & arrays$Geno=='CT'], 1, median)
+ank1[,arrays$tissue=='A' & arrays$Geno=='CT']
+as.matrix(ank1[,arrays$tissue=='A' & arrays$Geno=='CT'])
+dim(ank1)
+points(probes$MAPINFO, apply(getBeta(ank1)[,arrays$tissue=='A' & arrays$Geno=='CT'], 1, median))
+points(probes$MAPINFO, apply(getBeta(ank1)[,arrays$tissue=='A' & arrays$Geno=='CC'], 1, median), col='blue')
+points(probes$MAPINFO, apply(ank1[,arrays$tissue=='A' & arrays$Geno=='CT'], 1, median))
+plot(0:1,type='n',xlim=range(probes$MAPINFO),ylim=c(0,1))
+dev.new(width=20, height=20)
+plot(0:1,type='n',xlim=range(probes$MAPINFO),ylim=c(0,1))
+points(probes$MAPINFO, apply(getBeta(ank1)[,arrays$tissue=='A' & arrays$Geno=='CT'], 1, median))
+points(probes$MAPINFO, apply(getBeta(ank1)[,arrays$tissue=='A' & arrays$Geno=='CC'], 1, median), col='blue')
+dev.new(width=20, height=20)
+plot(0:1,type='n',xlim=range(probes$MAPINFO),ylim=c(0,1))
+points(probes$MAPINFO, apply(getBeta(ank1)[,arrays$tissue=='A' & arrays$Geno=='CT'], 1, median), pch=20)
+points(probes$MAPINFO, apply(getBeta(ank1)[,arrays$tissue=='A' & arrays$Geno=='CC'], 1, median), col='red', pch=20)
+plot(0:1,type='n',xlim=range(probes$MAPINFO),ylim=c(0,1))
+points(probes$MAPINFO, apply(getBeta(ank1)[,arrays$tissue=='M' & arrays$Geno=='CT'], 1, median), pch=20)
+points(probes$MAPINFO, apply(getBeta(ank1)[,arrays$tissue=='M' & arrays$Geno=='CC'], 1, median), col='red', pch=20)
+plot(apply(getBeta(ank1)[,arrays$tissue=='M' & arrays$Geno=='CT'], apply(getBeta(ank1)[,arrays$tissue=='M' & arrays$Geno=='CC'])
+)
+_
+plot(apply(getBeta(ank1)[,arrays$tissue=='M' & arrays$Geno=='CT']), apply(getBeta(ank1)[,arrays$tissue=='M' & arrays$Geno=='CC']))
+apply(getBeta(ank1)[,arrays$tissue=='M' & arrays$Geno=='CT'])
+plot(apply(getBeta(ank1)[,arrays$tissue=='M' & arrays$Geno=='CT'], 1, median),apply(getBeta(ank1)[,arrays$tissue=='M' & arrays$Geno=='CC'], 1, median))
+plot(apply(getBeta(ank1)[,arrays$tissue=='M' & arrays$Geno=='CT'], 1, median),apply(getBeta(ank1)[,arrays$tissue=='M' & arrays$Geno=='CC'], 1, median),xlim=c(0,1),ylim=c(0,1))
+plot(apply(getBeta(ank1)[,arrays$tissue=='A' & arrays$Geno=='CT'], 1, median),apply(getBeta(ank1)[,arrays$tissue=='A' & arrays$Geno=='CC'], 1, median),xlim=c(0,1),ylim=c(0,1))
+print(load("~/data/rna-seq/meta/pheno/sample_info.RData"))
+head(tissues)
+head(arrays)
+m<-match(assrays$Indiv, tissues$indiv)
+m<-match(assays$Indiv, tissues$indiv)
+m<-match(arrays$Indiv, tissues$indiv)
+m
+m<-match(arrays[,3], tissues$Indiv)
+m
+arrays$OGTT <- tissues[m,'OGTT']
+table(arrays$OGTT)
+plot(apply(getBeta(ank1)[,arrays$tissue=='A' & arrays$OGTT=='NGT'], 1, median),apply(getBeta(ank1)[,arrays$tissue=='A' & arrays$OGTT=='T2D'], 1, median),xlim=c(0,1),ylim=c(0,1))
+plot(apply(getBeta(ank1)[,arrays$tissue=='M' & arrays$OGTT=='NGT'], 1, median),apply(getBeta(ank1)[,arrays$tissue=='M' & arrays$OGTT=='T2D'], 1, median),xlim=c(0,1),ylim=c(0,1))
+boxplot(t(getBeta(ank1)))
+boxplot(t(getBeta(ank1)[,arrays$tissue=='A']))
+boxplot(t(getBeta(ank1)[,arrays$tissue=='M']))
+par(mfrow=c(2,1))
+boxplot(t(getBeta(ank1)[,arrays$tissue=='A']))
+boxplot(t(getBeta(ank1)[,arrays$tissue=='M']))
+boxplot(t(getBeta(ank1)[,arrays$tissue=='A']),ylim=c(0,1))
+boxplot(t(getBeta(ank1)[,arrays$tissue=='M']),ylim=c(0,1))
+boxplot(t(getBeta(ank1)[,arrays$tissue=='A']),ylim=c(0,1))
+boxplot(t(getBeta(ank1)[,arrays$tissue=='M']),ylim=c(0,1),xaxt='')
+boxplot(t(getBeta(ank1)[,arrays$tissue=='A']),ylim=c(0,1))
+boxplot(t(getBeta(ank1)[,arrays$tissue=='M']),ylim=c(0,1),xaxt='n')
+axis(1,1:88,probes$MAPINFO,las=3)
+ls()
+ggplot(mmm, aes(x=indiv, y=M, group=tissue, colour=rep)) + geom_point(position=position_dodge(width=0.5), size=3) + theme_bw()
+head(mmm)
+dim(mmm)
+mmm$OGTT <- tissues[match(mmm$indiv, tissues$Indiv), 'OGTT']
+head(mmm)
+ggplot(mmm, aes(x=indiv[tissue=='A',], y=M, group=OGTT, colour=rep)) + geom_point(position=position_dodge(width=0.5), size=3) + theme_bw()
+ggplot(mmm, aes(x=indiv[indiv$tissue=='A',], y=M, group=OGTT, colour=rep)) + geom_point(position=position_dodge(width=0.5), size=3) + theme_bw()
+ggplot(mmm, aes(x=indiv[mmm$tissue=='A',], y=M, group=OGTT, colour=rep)) + geom_point(position=position_dodge(width=0.5), size=3) + theme_bw()
+ggplot(mmm, aes(x=indiv[tissue=='A'], y=M, group=OGTT, colour=rep)) + geom_point(position=position_dodge(width=0.5), size=3) + theme_bw()
+ggplot(mmm, aes(x=indiv[mmm$tissue=='A'], y=M, group=OGTT, colour=rep)) + geom_point(position=position_dodge(width=0.5), size=3) + theme_bw()
+ggplot(mmm, aes(x=OGTT, y=M))+geom_boxplot()
+ggplot(mmm[mmm$tissue=='A',], aes(x=OGTT, y=M))+geom_boxplot()
+ggplot(mmm[mmm$tissue=='M',], aes(x=OGTT, y=M))+geom_boxplot()
+ggplot(mmm[mmm$tissue=='A',], aes(x=OGTT, y=M))+geom_boxplot()
+ls9)
+ls()
+head(arrays)
+m<-match(mmm$indiv, arrays[,3])
+m
+mmm$Geno <- arrays[m,'Geno']
+head(mmm)
+table(mmm$OGTT,mmm$Geno)
+.libPaths()
+update.packages()
+y
+y#
+y
+y#
+y#
+y
+y#
+y#
+y#
+y
+y#
+y#
+y#
+y#
+y
+y#
+y#
+y#
+y#
+y#
+y
+install.packages('pixiedust')
+?corr.test
+?cor.test
+215.9-((6*32.5) + (5*1.63) + (2*6.35))
+215.9-((6*32.5) + (5*1.64) + (2*6.35))
+library(DEUtils)
+setwd('~/projects/Rpackages/fancyplots/')
+devtools::install()

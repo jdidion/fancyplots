@@ -1,4 +1,4 @@
-plot.pca.matrix <- function(m, group.df, PCs=c(1,2), returnData=FALSE, plotData=TRUE, returnFig=FALSE, ...) {
+plot.pca.matrix <- function(m, group.df=NULL, PCs=c(1,2), returnData=FALSE, plotData=TRUE, returnFig=FALSE, ...) {
     pca <- prcomp(t(as.matrix(m)), center=TRUE, scale.=FALSE)
     pct.var <- percent.var(pca)
     if (plotData) {
@@ -69,8 +69,11 @@ plot.mds <- function(d, group.df, dim.plot=c(1, 2), ndim=max(dim.plot), returnDa
 }
 
 plot.eig <- function(x, y, group.df, PCs, pt.size=2, pct.var=NULL, plot=TRUE, main=NULL, dim.label="PC") {
-    group <- factor(apply(group.df, 1, paste, collapse = " : "))
-    d <- data.frame(PC1=x, PC2=y, group=group, group.df, names=rownames(group.df))
+    d <- data.frame(PC1=x, PC2=y, group=1)
+    if (!is.null(group.df)) {
+        d$group <- factor(apply(group.df, 1, paste, collapse = " : "))
+        #d <- cbind(d, group.df, names=rownames(group.df))
+    }
     x.lab <- paste(dim.label, PCs[1])
     y.lab <- paste(dim.label, PCs[2])
     if (!is.null(pct.var)) {
