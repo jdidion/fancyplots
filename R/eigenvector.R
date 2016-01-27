@@ -1,5 +1,5 @@
 plot.pca.matrix <- function(m, group.df=NULL, PCs=c(1,2), returnData=FALSE, plotData=TRUE, returnFig=FALSE, ...) {
-    pca <- prcomp(t(as.matrix(m)), center=TRUE, scale.=FALSE)
+    pca <- prcomp(t(as.matrix(m)), center=TRUE, scale.=TRUE)
     pct.var <- percent.var(pca)
     if (plotData) {
         fig <- plot.pca(pca, group.df, PCs, pct.var, !returnFig, ...)
